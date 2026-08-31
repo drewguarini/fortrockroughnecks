@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>League History &amp; Trophy Case</title>
+<style>
+  :root{
+    --green: #16332a;
+    --green-dark: #0d251d;
+    --white: #ffffff;
+    --paper: #faf8f4;
+    --ink: #201d18;
+    --ink-soft: #6b6357;
+    --brass: #b8935a;
+    --brass-deep: #8a6b3d;
+    --gold-badge: #e8b13e;
+    --gold-badge-ink: #4a340a;
+    --seam: #8c3b2e;
+    --line: #e6e0d3;
+    --card-shadow: 0 1px 2px rgba(20,18,14,0.06), 0 8px 24px rgba(20,18,14,0.06);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--white);
+    color:var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px;}
+
+  /* TOP BAR */
+  header.topbar{
+    background:var(--green);
+    padding:36px 0;
+    border-bottom:4px solid var(--brass);
+  }
+  header.topbar .wrap{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .eyebrow{
+    letter-spacing:0.28em;
+    text-transform:uppercase;
+    font-family:'Courier New', monospace;
+    font-size:11px;
+    color:var(--brass);
+    margin-bottom:8px;
+    display:block;
+  }
+  h1.title{
+    font-family:'Rockwell','Roboto Slab',Georgia,serif;
+    font-weight:700;
+    font-size:clamp(30px, 4.5vw, 46px);
+    margin:0;
+    color:var(--white);
+  }
+  .topbar .meta{
+    font-family:'Courier New', monospace;
+    font-size:13px;
+    letter-spacing:0.06em;
+    color:var(--brass);
+  }
+
+  section{padding:56px 0;}
+  section.managers{padding-bottom:24px;}
+  h2.section-title{
+    font-family:'Rockwell','Roboto Slab',Georgia,serif;
+    font-size:26px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    color:var(--green);
+    border-bottom:2px solid var(--line);
+    padding-bottom:14px;
+    margin-bottom:32px;
+  }
+
+  /* MANAGER CARDS */
+  .manager-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:24px;
+  }
+  @media (max-width:820px){ .manager-grid{grid-template-columns:1fr;} }
+
+  .manager-card{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:22px 22px 24px;
+    box-shadow:var(--card-shadow);
+  }
+  .manager-head{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:16px;
+  }
+  .avatar-wrap{
+    width:52px;height:52px;border-radius:50%;
+    position:relative;
+    flex:none;
+    overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .avatar{
+    width:100%;height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .avatar-fallback{
+    position:absolute; inset:0;
+    align-items:center;justify-content:center;
+    font-family:'Rockwell','Roboto Slab',Georgia,serif;
+    font-weight:700;font-size:18px;color:var(--white);
+  }
+  .manager-name{
+    font-family:'Rockwell','Roboto Slab',Georgia,serif;
+    font-size:21px;
+    font-weight:700;
+    color:var(--ink);
+    line-height:1.15;
+  }
+  .manager-sub{
+    font-family:'Courier New', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    letter-spacing:0.03em;
+    margin-top:2px;
+  }
+
+  .trophy-case{
+    background:var(--green-dark);
+    border-radius:5px;
+    padding:14px 14px 6px;
+    margin-bottom:14px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .trophy-case:empty::before{
+    content:"No hardware yet";
+    color:var(--brass);
+    font-family:'Courier New', monospace;
+    font-size:12px;
+    opacity:0.7;
+    padding:6px 0 8px;
+  }
+  .badge{
+    font-family:'Courier New', monospace;
+    font-size:12px;
+    font-weight:bold;
+    padding:6px 10px;
+    border-radius:3px;
+    margin-bottom:8px;
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    letter-spacing:0.02em;
+  }
+  .badge.champ{ background:var(--gold-badge); color:var(--gold-badge-ink); }
+  .badge.season{ background:var(--brass); color:var(--green-dark); }
+  .badge.points{ background:var(--seam); color:var(--white); }
+  .badge.runnerup{ background:#c7cdd3; color:#2c343a; }
+
+  .bio{
+    font-style:italic;
+    color:var(--ink-soft);
+    font-size:14.5px;
+    line-height:1.5;
+    margin-bottom:12px;
+  }
+  .team-history{
+    font-family:'Courier New', monospace;
+    font-size:13.5px;
+    color:var(--ink-soft);
+    line-height:1.6;
+    margin-bottom:16px;
+    padding-top:10px;
+    border-top:1px dashed var(--line);
+  }
+  .team-history-label{
+    color:var(--brass-deep);
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    font-weight:bold;
+    margin-right:4px;
+  }
+
+  table.stat-table{
+    width:100%;
+    border-collapse:collapse;
+    font-family:'Courier New', monospace;
+    font-size:13.5px;
+  }
+  table.stat-table tr{ border-top:1px solid var(--line); }
+  table.stat-table tr:first-child{ border-top:none; }
+  table.stat-table td{
+    padding:8px 4px;
+  }
+  table.stat-table td.label{
+    color:var(--ink-soft);
+    width:46%;
+  }
+  table.stat-table td.value{
+    color:var(--ink);
+    font-weight:bold;
+  }
+
+  /* TROPHY SHELVES */
+  .shelf{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:16px;
+    margin-bottom:48px;
+  }
+  @media (max-width:900px){ .shelf{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:520px){ .shelf{grid-template-columns:1fr;} }
+  .trophy-card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:5px;
+    padding:18px 16px;
+  }
+  .trophy-card .cup{
+    font-family:'Rockwell','Roboto Slab',Georgia,serif;
+    font-size:12px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--seam);
+    margin-bottom:6px;
+  }
+  .trophy-card .name{
+    font-family:'Rockwell','Roboto Slab',Georgia,serif;
+    font-size:20px;
+    font-weight:700;
+    color:var(--ink);
+  }
+  .trophy-card .count{
+    font-family:'Courier New', monospace;
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+  .trophy-card .count b{ color:var(--ink); font-size:15px; }
+
+  .wrinkle-note{
+    font-family:'Courier New', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin:-20px 0 20px;
+  }
+  .wrinkle-card{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:5px;
+    padding:14px 16px;
+  }
+  .wrinkle-card .wrinkle-year{
+    font-family:'Rockwell','Roboto Slab',Georgia,serif;
+    font-size:22px;
+    font-weight:700;
+    color:var(--seam);
+    min-width:52px;
+  }
+  .wrinkle-card .wrinkle-name{
+    font-family:'Rockwell','Roboto Slab',Georgia,serif;
+    font-size:17px;
+    font-weight:700;
+  }
+  .wrinkle-card .wrinkle-tags{
+    font-family:'Courier New', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+  }
+
+  /* LEADERBOARD */
+  table.ledger{
+    width:100%;
+    border-collapse:collapse;
+    margin-bottom:56px;
+    font-family:'Courier New', monospace;
+    font-size:14px;
+  }
+  table.ledger th, table.ledger td{
+    padding:10px 12px;
+    border-bottom:1px solid var(--line);
+    text-align:center;
+  }
+  table.ledger th{
+    color:var(--white);
+    background:var(--green);
+    font-weight:normal;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    font-size:12px;
+  }
+  table.ledger td:first-child, table.ledger th:first-child{text-align:left;}
+  table.ledger tr.leader td{ color:var(--seam); font-weight:bold; }
+
+  /* YEAR GRID */
+  .year-grid{
+    display:grid;
+    grid-template-columns: 84px 1fr 1fr 1fr;
+    font-family:'Courier New', monospace;
+    font-size:13.5px;
+    border:1px solid var(--line);
+    margin-bottom:24px;
+  }
+  .year-grid .head{
+    background:var(--green);
+    color:var(--white);
+    text-transform:uppercase;
+    font-size:10.5px;
+    letter-spacing:0.04em;
+    padding:10px 8px;
+  }
+  .year-grid .cell{
+    padding:9px 8px;
+    border-bottom:1px solid var(--line);
+  }
+  .year-grid .cell.year{ color:var(--seam); font-weight:bold; }
+  .year-grid .cell{ display:flex; align-items:center; gap:6px; }
+  .mini-avatar{
+    display:inline-flex;
+    border-radius:50%;
+    overflow:hidden;
+    flex:none;
+    border:1px solid var(--line);
+  }
+  table.ledger td.name-cell{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    text-align:left;
+  }
+  @media (max-width:700px){
+    .year-grid{grid-template-columns: 64px 1fr 1fr 1fr; font-size:12px;}
+  }
+
+  footer{
+    padding:30px 0 60px;
+    text-align:center;
+    font-family:'Courier New', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    border-top:1px solid var(--line);
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Est. 2011</span>
+      <h1 class="title">Fort Rock Roughnecks Fantasy Football</h1>
+    </div>
+    <div class="meta">2011&ndash;2025 &middot; 15 SEASONS</div>
+  </div>
+</header>
+
+<section class="managers wrap">
+  <h2 class="section-title">Managers</h2>
+  <div class="manager-grid" id="manager-grid"></div>
+</section>
+
+<section class="wrap">
+  <h2 class="section-title">All-Time Leaderboard</h2>
+  <table class="ledger">
+    <thead>
+      <tr>
+        <th>Manager</th>
+        <th>Season Titles</th>
+        <th>Playoff Titles</th>
+        <th>Point Titles</th>
+        <th>Playoff Runner-Up</th>
+        <th>Total Hardware</th>
+      </tr>
+    </thead>
+    <tbody id="ledger-body"></tbody>
+  </table>
+
+  <h2 class="section-title">Year by Year</h2>
+  <div class="year-grid" id="year-grid"></div>
+
+  <h2 class="section-title">Trifecta Years</h2>
+  <div class="wrinkle-note">Won Playoff, Season, and Points titles in the same year.</div>
+  <div class="shelf" id="shelf-trifecta"></div>
+
+  <h2 class="section-title">Golden Years</h2>
+  <div class="wrinkle-note">Won Playoff and Season titles in the same year. <span id="golden-overlap-note"></span></div>
+  <div class="shelf" id="shelf-golden"></div>
+
+  <h2 class="section-title">Career Scoring Leaderboard</h2>
+  <div class="wrinkle-note">Regular-season scoring only — does not include playoff-week points. Avg/Season accounts for managers who played fewer years.</div>
+  <table class="ledger">
+    <thead>
+      <tr>
+        <th>Manager</th>
+        <th>Seasons</th>
+        <th>Total Points</th>
+        <th>Avg / Season</th>
+      </tr>
+    </thead>
+    <tbody id="scoring-body"></tbody>
+  </table>
+
+  <h2 class="section-title">Season Champions</h2>
+  <div class="shelf" id="shelf-season"></div>
+
+  <h2 class="section-title">Playoff Champions</h2>
+  <div class="shelf" id="shelf-playoff"></div>
+
+  <h2 class="section-title">Point Titles</h2>
+  <div class="shelf" id="shelf-points"></div>
+
+  <h2 class="section-title">Playoff Runner-Up</h2>
+  <div class="shelf" id="shelf-runnerup"></div>
+</section>
+
+<footer>
+  Compiled from league history spreadsheet &middot; Season/Playoff Finishing Position &amp; Points-Per-Season tabs
+</footer>
+
+<script>
+// ---- Source data, derived from the league history sheet ----
+const seasonChamps = {
+  2011:"Drew", 2012:"Pat", 2013:"Pat", 2014:"Sean", 2015:"Pat", 2016:"Remy",
+  2017:"Tommy", 2018:"Remy", 2019:"Drew", 2020:"Sean", 2021:"Bri", 2022:"Bri",
+  2023:"Bri", 2024:"Tommy", 2025:"Pat"
+};
+const playoffChamps = {
+  2011:"Pat", 2012:"Ethan", 2013:"Sean", 2014:"Drew", 2015:"Remy", 2016:"Crow",
+  2017:"Crow", 2018:"Sean", 2019:"Jake", 2020:"Sean", 2021:"Ethan", 2022:"Drew",
+  2023:"Ethan", 2024:"Remy", 2025:"Pat"
+};
+const playoffRunnerUp = {
+  2011:"Remy", 2012:"Pat", 2013:"Crow", 2014:"Crow", 2015:"Drew", 2016:"Drew",
+  2017:"Jake", 2018:"Ethan", 2019:"Sean", 2020:"Drew", 2021:"Bri", 2022:"Pat",
+  2023:"Bri", 2024:"Tommy", 2025:"Cannone"
+};
+const pointTitles = {
+  2011:"Drew", 2012:"Pat", 2013:"Drew", 2014:"Sean", 2015:"Sean", 2016:"Remy",
+  2017:"Crow", 2018:"Pat", 2019:"Drew", 2020:"Sean", 2021:"Cannone", 2022:"Bri",
+  2023:"Sean", 2024:"Remy", 2025:"Pat"
+};
+
+// Manager meta: seasons range, all-time record, win pct (from Season Win-Loss tab)
+const managerMeta = {
+  Drew:    { range:"2011–2025", seasons:15, record:"105-95",  pct:.525 },
+  Jarrett: { range:"2011–2025", seasons:15, record:"105-95",  pct:.525 },
+  Remy:    { range:"2011–2025", seasons:15, record:"95-105",  pct:.475 },
+  Tommy:   { range:"2011–2025", seasons:15, record:"84-116",  pct:.420 },
+  Crow:    { range:"2011–2018", seasons:8,  record:"52-52",   pct:.500 },
+  Ethan:   { range:"2011–2025", seasons:15, record:"104-96",  pct:.520 },
+  Bri:     { range:"2011–2025", seasons:15, record:"91-109",  pct:.450 },
+  Pat:     { range:"2011–2025", seasons:15, record:"123-77",  pct:.615 },
+  Sean:    { range:"2011–2025", seasons:15, record:"97-103",  pct:.485 },
+  Jake:    { range:"2011–2025", seasons:15, record:"99-101",  pct:.495 },
+  Cannone: { range:"2019–2025", seasons:7,  record:"45-51",   pct:.468 }
+};
+
+// Best single-season point total per manager (from Points/Season tab)
+const bestSeason = {
+  Drew:{year:2013,score:1853.72}, Jarrett:{year:2018,score:1784.22},
+  Remy:{year:2024,score:1867.38}, Tommy:{year:2021,score:1812.50},
+  Crow:{year:2014,score:1755.50}, Ethan:{year:2025,score:1833.98},
+  Bri:{year:2022,score:1964.84},  Pat:{year:2018,score:1892.76},
+  Sean:{year:2023,score:1853.82}, Jake:{year:2022,score:1846.60},
+  Cannone:{year:2021,score:1961.12}
+};
+
+const teamNames = {
+  Drew: ["Morris Maulers","Morris Merkers","Morris Maniacs","Wisconsin Wookies","Myrtle Meatsticks","California Crunchies"],
+  Ethan: ["Hung Like Vick's Dog","Finding Forestdale"],
+  Pat: ["El Patman"],
+  Tommy: ["Wachusett Wombats","The Big Kahunas","Big Tom Callahans","Wyandanch Warriors","Gold St. Hooligans","Yorkville","EAB Kahunas","Wisconsin Chocolatès","Mohawk Mohawks","East Atlantic Beach FC","EAB FC"],
+  Jake: ["Virginia Volunteers","Virginia Vagabonds","Melville Minutemen","Long Beach Badgers","83ers","Harlem Hammers","Normandy Invaders"],
+  Remy: ["Midfarm Baconators","Cornelia Crabs","Cornelia Co Inc.","Cornelia Crabs","Banks Batteries","Midfarm Moonwalkers"],
+  Bri: ["Disputed","Daddy Long Legs","Lindell Lennys","Slender Wadlow","Ludlow Hil Dawgs","Tarance Taint","6th St. Saucy Mamas","StuyTown Saucy Mamas","Make Morris Great Again"],
+  Jarrett: ["Eton Erasers","Park Avenue Puffers","West End Whompers","Lakeview Limp Dicks","Princeton TBD"],
+  Sean: ["Don't Mind My Grind"],
+  Cannone: ["Gonzo The Kid","Gonzo The Winnin","Gonzo ël Kid","Gonzo The Kid"],
+  Crow: ["Just Hank","Crocker Crackers","LeNnY"]
+};
+
+// Raw points-per-season, from the Points/Season tab (used for career scoring totals)
+const seasonPoints = {
+  Drew:    {2011:1480.48,2012:1526.78,2013:1853.72,2014:1688.64,2015:1589.92,2016:1600.28,2017:1685.66,2018:1543.36,2019:1762.24,2020:1727.60,2021:1804.52,2022:1766.50,2023:1584.96,2024:1636.66,2025:1684.10},
+  Jarrett: {2011:1430.62,2012:1468.16,2013:1748.80,2014:1378.92,2015:1719.42,2016:1608.24,2017:1431.72,2018:1784.22,2019:1537.52,2020:1672.16,2021:1758.22,2022:1640.02,2023:1623.00,2024:1667.22,2025:1666.90},
+  Remy:    {2011:1420.44,2012:1503.18,2013:1327.24,2014:1532.70,2015:1687.40,2016:1688.62,2017:1544.96,2018:1716.78,2019:1593.46,2020:1561.26,2021:1723.88,2022:1644.74,2023:1665.40,2024:1867.38,2025:1829.38},
+  Tommy:   {2011:1261.88,2012:1455.20,2013:1526.88,2014:1517.08,2015:1320.98,2016:1536.24,2017:1651.98,2018:1469.80,2019:1511.74,2020:1459.74,2021:1812.50,2022:1545.64,2023:1751.18,2024:1791.46,2025:1603.00},
+  Crow:    {2011:1075.38,2012:1688.02,2013:1614.76,2014:1755.50,2015:1578.30,2016:1644.20,2017:1742.40,2018:1687.08},
+  Ethan:   {2011:1219.02,2012:1537.74,2013:1532.88,2014:1604.36,2015:1658.78,2016:1668.78,2017:1413.36,2018:1798.46,2019:1475.12,2020:1771.70,2021:1669.54,2022:1695.62,2023:1765.44,2024:1623.16,2025:1833.98},
+  Bri:     {2011:1239.52,2012:1427.50,2013:1455.04,2014:1597.64,2015:1543.16,2016:1418.72,2017:1436.32,2018:1711.40,2019:1432.72,2020:1585.56,2021:1723.98,2022:1964.84,2023:1786.08,2024:1610.30,2025:1606.28},
+  Pat:     {2011:1283.16,2012:1848.84,2013:1666.66,2014:1660.48,2015:1752.24,2016:1545.54,2017:1453.78,2018:1892.76,2019:1780.14,2020:1629.58,2021:1671.96,2022:1771.30,2023:1677.42,2024:1783.36,2025:1854.46},
+  Sean:    {2011:1202.46,2012:1532.46,2013:1849.94,2014:1841.32,2015:1781.14,2016:1604.26,2017:1504.54,2018:1736.64,2019:1675.20,2020:1827.50,2021:1734.80,2022:1555.68,2023:1853.82,2024:1825.48,2025:1628.94},
+  Jake:    {2011:1366.14,2012:1636.12,2013:1626.84,2014:1688.14,2015:1616.22,2016:1570.98,2017:1528.16,2018:1590.50,2019:1758.82,2020:1546.08,2021:1771.54,2022:1846.60,2023:1688.90,2024:1575.32,2025:1613.80},
+  Cannone: {2019:1531.62,2020:1492.70,2021:1961.12,2022:1598.02,2023:1710.86,2024:1792.46,2025:1836.84}
+};
+
+// Trifecta = same manager won Playoff + Season + Points in one year
+// Golden Year = same manager won Playoff + Season in one year (points title not required)
+const wrinkleYears = Object.keys(seasonChamps).sort();
+const goldenYears = wrinkleYears.filter(y => seasonChamps[y] === playoffChamps[y])
+  .map(y => ({year:y, name:seasonChamps[y]}));
+const trifectaYears = goldenYears.filter(g => pointTitles[g.year] === g.name);
+
+const avatarPalette = ["#16332a","#8c3b2e","#8a6b3d","#3a5a52","#5a3a52","#3a4f8a","#7a5a1e"];
+const photos = {
+  Pat: "https://i.imgur.com/HJI9vPn.png",
+  Bri: "https://i.imgur.com/6u7ikwE.png",
+  Sean: "https://i.imgur.com/bA2v7wg.png",
+  Drew: "https://i.imgur.com/CAhBxQO.png",
+  Remy: "https://i.imgur.com/WtbgbQM.png",
+  Tommy: "https://i.imgur.com/hoGJYs2.png",
+  Ethan: "https://i.imgur.com/2ZAVNRF.png",
+  Crow: "https://i.imgur.com/1UXbWJY.png",
+  Jake: "https://i.imgur.com/uKQwCaE.png",
+  Cannone: "https://i.imgur.com/gQYUnJO.png",
+  Jarrett: "https://i.imgur.com/WXROBGn.png"
+};
+function colorFor(name){
+  let h=0; for(const c of name) h = (h*31 + c.charCodeAt(0)) % avatarPalette.length;
+  return avatarPalette[h];
+}
+
+function invert(obj){
+  const map = {};
+  Object.entries(obj).forEach(([year,name])=>{
+    if(!map[name]) map[name]=[];
+    map[name].push(year);
+  });
+  return map;
+}
+const seasonYearsBy = invert(seasonChamps);
+const playoffYearsBy = invert(playoffChamps);
+const pointYearsBy = invert(pointTitles);
+const runnerUpYearsBy = invert(playoffRunnerUp);
+
+function tally(obj){
+  const counts = {};
+  Object.values(obj).forEach(name=>{ counts[name] = (counts[name]||0)+1; });
+  return counts;
+}
+const seasonCounts = tally(seasonChamps);
+const playoffCounts = tally(playoffChamps);
+const pointCounts = tally(pointTitles);
+const runnerUpCounts = tally(playoffRunnerUp);
+
+// ---- Manager cards ----
+const managerGrid = document.getElementById("manager-grid");
+const managerOrder = ["Pat","Bri","Sean","Drew","Remy","Ethan","Crow","Tommy","Jake","Cannone","Jarrett"];
+
+managerGrid.innerHTML = managerOrder.map(name=>{
+  const meta = managerMeta[name];
+  const champYears = (playoffYearsBy[name]||[]).sort();
+  const seasonYears = (seasonYearsBy[name]||[]).sort();
+  const pointYears = (pointYearsBy[name]||[]).sort();
+  const runnerUpYears = (runnerUpYearsBy[name]||[]).sort();
+  const best = bestSeason[name];
+  const badges = [
+    ...champYears.map(y=>`<span class="badge champ">🏆 PLAYOFF ${y}</span>`),
+    ...seasonYears.map(y=>`<span class="badge season">🏅 SEASON ${y}</span>`),
+    ...runnerUpYears.map(y=>`<span class="badge runnerup">🥈 RUNNER-UP ${y}</span>`),
+    ...pointYears.map(y=>`<span class="badge points">💯 POINTS ${y}</span>`)
+  ].join("");
+  const hardware = champYears.length + seasonYears.length + pointYears.length;
+  const bio = name === "Crow"
+    ? "Manager since 2011, exited league in 2019."
+    : hardware > 0
+    ? `Manager since ${meta.range.split("–")[0]} &middot; ${meta.record} all-time (${(meta.pct*100).toFixed(1)}%) &middot; ${champYears.length} playoff title${champYears.length===1?'':'s'}, ${seasonYears.length} season title${seasonYears.length===1?'':'s'}, ${pointYears.length} point title${pointYears.length===1?'':'s'}.`
+    : `Manager since ${meta.range.split("–")[0]} &middot; ${meta.record} all-time (${(meta.pct*100).toFixed(1)}%) &middot; still chasing the first title.`;
+  return `
+    <div class="manager-card">
+      <div class="manager-head">
+        <div class="avatar-wrap" style="background:${colorFor(name)}">
+          <img class="avatar" src="${photos[name]}" alt="${name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="avatar-fallback" style="display:none;background:${colorFor(name)}">${name[0]}</div>
+        </div>
+        <div>
+          <div class="manager-name">${name}</div>
+          <div class="manager-sub">${meta.range} &middot; ${meta.seasons} seasons</div>
+        </div>
+      </div>
+      <div class="trophy-case">${badges}</div>
+      <div class="bio">${bio}</div>
+      <div class="team-history"><span class="team-history-label">Team Name History:</span> ${(teamNames[name]||[]).join(", ")}</div>
+      <table class="stat-table">
+        <tr><td class="label">Since / Seasons</td><td class="value">${meta.range}</td></tr>
+        <tr><td class="label">All-Time Record</td><td class="value">${meta.record} (${(meta.pct*100).toFixed(1)}%)</td></tr>
+        <tr><td class="label">Playoff Championships</td><td class="value">${playoffCounts[name]||0}</td></tr>
+        <tr><td class="label">Season Titles</td><td class="value">${seasonCounts[name]||0}</td></tr>
+        <tr><td class="label">Playoff Runner-Up</td><td class="value">${runnerUpCounts[name]||0}</td></tr>
+        <tr><td class="label">Point Titles</td><td class="value">${pointCounts[name]||0}</td></tr>
+        <tr><td class="label">Best Season</td><td class="value">${best.score} (${best.year})</td></tr>
+      </table>
+    </div>
+  `;
+}).join("");
+
+// ---- Trophy shelves ----
+function renderShelf(elId, counts, label){
+  const el = document.getElementById(elId);
+  const entries = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  el.innerHTML = entries.map(([name,count])=>`
+    <div class="trophy-card">
+      <div class="cup">${label}</div>
+      <div class="name">${name}</div>
+      <div class="count"><b>${count}</b> ${count===1?'title':'titles'}</div>
+    </div>
+  `).join("");
+}
+renderShelf("shelf-season", seasonCounts, "Season Champion");
+renderShelf("shelf-playoff", playoffCounts, "Playoff Champion");
+renderShelf("shelf-points", pointCounts, "Point Title");
+renderShelf("shelf-runnerup", runnerUpCounts, "Playoff Runner-Up");
+
+// ---- Leaderboard ----
+const allManagers = Object.keys(managerMeta);
+const leaderboard = allManagers.map(name=>{
+  const s = seasonCounts[name]||0, p = playoffCounts[name]||0;
+  const pt = pointCounts[name]||0, r = runnerUpCounts[name]||0;
+  return {name, s, p, pt, r, total: s+p+pt+r};
+}).sort((a,b)=>b.total-a.total);
+
+function avatarImg(name, size){
+  size = size || 24;
+  return `<span class="mini-avatar" style="width:${size}px;height:${size}px;background:${colorFor(name)}">
+    <img src="${photos[name]||''}" alt="${name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.style.display='none';">
+  </span>`;
+}
+
+document.getElementById("ledger-body").innerHTML = leaderboard.map((m,i)=>`
+  <tr class="${i===0?'leader':''}">
+    <td class="name-cell">${avatarImg(m.name)} ${m.name}</td><td>${m.s}</td><td>${m.p}</td><td>${m.pt}</td><td>${m.r}</td><td>${m.total}</td>
+  </tr>
+`).join("");
+
+// ---- Year by year ----
+const yearGrid = document.getElementById("year-grid");
+const years = Object.keys(seasonChamps).sort();
+let rows = `
+  <div class="head">Year</div>
+  <div class="head">Season Champ</div>
+  <div class="head">Playoff Champ</div>
+  <div class="head">Point Title</div>
+`;
+years.forEach(y=>{
+  rows += `
+    <div class="cell year">${y}</div>
+    <div class="cell">${avatarImg(seasonChamps[y],20)} 🏅 ${seasonChamps[y]}</div>
+    <div class="cell">${avatarImg(playoffChamps[y],20)} 🏆 ${playoffChamps[y]}</div>
+    <div class="cell">${avatarImg(pointTitles[y],20)} 💯 ${pointTitles[y]}</div>
+  `;
+});
+yearGrid.innerHTML = rows;
+
+// ---- Trifecta / Golden Years ----
+document.getElementById("shelf-trifecta").innerHTML = trifectaYears.map(g => `
+  <div class="wrinkle-card">
+    <div class="wrinkle-year">${g.year}</div>
+    ${avatarImg(g.name, 36)}
+    <div>
+      <div class="wrinkle-name">${g.name}</div>
+      <div class="wrinkle-tags">🏆 🏅 💯</div>
+    </div>
+  </div>
+`).join("");
+
+document.getElementById("shelf-golden").innerHTML = goldenYears.map(g => `
+  <div class="wrinkle-card">
+    <div class="wrinkle-year">${g.year}</div>
+    ${avatarImg(g.name, 36)}
+    <div>
+      <div class="wrinkle-name">${g.name}</div>
+      <div class="wrinkle-tags">🏆 🏅</div>
+    </div>
+  </div>
+`).join("");
+
+document.getElementById("golden-overlap-note").textContent =
+  goldenYears.length === trifectaYears.length
+    ? "Every Golden Year in league history has also been a Trifecta Year."
+    : `${trifectaYears.length} of ${goldenYears.length} Golden Years also included the Points title.`;
+
+// ---- Career Scoring Leaderboard ----
+const scoring = Object.keys(seasonPoints).map(name => {
+  const years = Object.values(seasonPoints[name]);
+  const total = years.reduce((a,b)=>a+b, 0);
+  return { name, seasons: years.length, total, avg: total / years.length };
+}).sort((a,b) => b.total - a.total);
+
+document.getElementById("scoring-body").innerHTML = scoring.map(m => `
+  <tr>
+    <td class="name-cell">${avatarImg(m.name)} ${m.name}</td>
+    <td>${m.seasons}</td>
+    <td>${m.total.toFixed(2)}</td>
+    <td>${m.avg.toFixed(2)}</td>
+  </tr>
+`).join("");
+</script>
+
+</body>
+</html>
