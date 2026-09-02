@@ -32,37 +32,26 @@
   /* TOP BAR */
   header.topbar{
     background:var(--green);
-    padding:36px 0;
     border-bottom:4px solid var(--brass);
+    line-height:0;
   }
-  header.topbar .wrap{
-    display:flex;
-    align-items:baseline;
-    justify-content:space-between;
-    flex-wrap:wrap;
-    gap:10px;
-  }
-  .eyebrow{
-    letter-spacing:0.28em;
-    text-transform:uppercase;
-    font-family:'Courier New', monospace;
-    font-size:11px;
-    color:var(--brass);
-    margin-bottom:8px;
+  .header-banner{
+    width:100%;
+    max-height:340px;
+    object-fit:cover;
     display:block;
   }
-  h1.title{
-    font-family:'Rockwell','Roboto Slab',Georgia,serif;
-    font-weight:700;
-    font-size:clamp(30px, 4.5vw, 46px);
-    margin:0;
-    color:var(--white);
+
+  section.intro-photo{
+    padding:40px 24px 0;
   }
-  .topbar .meta{
-    font-family:'Courier New', monospace;
-    font-size:13px;
-    letter-spacing:0.06em;
-    color:var(--brass);
+  section.intro-photo img{
+    width:100%;
+    max-height:480px;
+    object-fit:cover;
+    border-radius:6px;
+    display:block;
+    box-shadow:var(--card-shadow);
   }
 
   section{padding:56px 0;}
@@ -356,14 +345,12 @@
 <body>
 
 <header class="topbar">
-  <div class="wrap">
-    <div>
-      <span class="eyebrow">Est. 2011</span>
-      <h1 class="title">Fort Rock Roughnecks Fantasy Football</h1>
-    </div>
-    <div class="meta">2011&ndash;2025 &middot; 15 SEASONS</div>
-  </div>
+  <img class="header-banner" src="https://i.imgur.com/SqVHsF1.png" alt="Fort Rock Roughnecks Fantasy Football">
 </header>
+
+<section class="intro-photo wrap">
+  <img src="https://i.imgur.com/SjNZ7AK.jpeg" alt="League photo">
+</section>
 
 <section class="managers wrap">
   <h2 class="section-title">Managers</h2>
