@@ -43,10 +43,24 @@
     display:block;
   }
 
+  nav.site-nav{
+    background:var(--green-dark);
+    border-bottom:1px solid var(--brass);
+  }
+  nav.site-nav a{
+    display:inline-block;
+    padding:12px 0;
+    font-family:'Courier New', monospace;
+    font-size:13px;
+    letter-spacing:0.04em;
+    color:var(--brass);
+    text-decoration:none;
+  }
+  nav.site-nav a:hover{ color:var(--white); }
+
   section.intro-photo{
     padding:40px 24px 0;
-  }
-  section.intro-photo img{
+  }  section.intro-photo img{
     width:100%;
     max-height:480px;
     object-fit:cover;
@@ -348,6 +362,10 @@
 <header class="topbar">
   <img class="header-banner" src="https://i.imgur.com/SqVHsF1.png" alt="Fort Rock Roughnecks Fantasy Football">
 </header>
+
+<nav class="site-nav">
+  <div class="wrap"><a href="poop-man.html">🚽 Poop Man of the Week 💩</a></div>
+</nav>
 
 <section class="intro-photo wrap">
   <img src="https://i.imgur.com/SjNZ7AK.jpeg" alt="League photo">
