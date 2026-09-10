@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poop Man of the Week — Fort Rock Roughnecks</title>
+<style>
+  :root{
+    --green: #16332a;
+    --green-dark: #0d251d;
+    --white: #ffffff;
+    --paper: #faf8f4;
+    --ink: #201d18;
+    --ink-soft: #6b6357;
+    --brass: #b8935a;
+    --brass-deep: #8a6b3d;
+    --gold-badge: #e8b13e;
+    --gold-badge-ink: #4a340a;
+    --seam: #8c3b2e;
+    --line: #e6e0d3;
+    --card-shadow: 0 1px 2px rgba(20,18,14,0.06), 0 8px 24px rgba(20,18,14,0.06);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--white);
+    color:var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
+
+  header.topbar{
+    background:var(--green);
+    padding:32px 0;
+    border-bottom:4px solid var(--brass);
+  }
+  header.topbar .wrap{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:14px;
+  }
+  .back-link{
+    font-family:'Courier New', monospace;
+    font-size:12.5px;
+    color:var(--brass);
+    text-decoration:none;
+    letter-spacing:0.04em;
+  }
+  .back-link:hover{ text-decoration:underline; }
+  h1.title{
+    font-family:'Rockwell','Roboto Slab',Georgia,serif;
+    font-weight:700;
+    font-size:clamp(28px, 4.5vw, 42px);
+    margin:0;
+    color:var(--white);
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+  .title-flank{
+    height:1em;
+    width:auto;
+    flex:none;
+  }
+  .subtitle{
+    font-family:'Courier New', monospace;
+    font-size:12.5px;
+    color:var(--brass);
+    margin-top:6px;
+    letter-spacing:0.03em;
+  }
+
+  section{padding:44px 0;}
+  .rule-box{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-left:5px solid var(--seam);
+    border-radius:4px;
+    padding:20px 22px;
+    font-size:15px;
+    line-height:1.6;
+    color:var(--ink);
+    margin-bottom:8px;
+  }
+  .rule-box b{ color:var(--seam); }
+
+  h2.section-title{
+    font-family:'Rockwell','Roboto Slab',Georgia,serif;
+    font-size:24px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    color:var(--green);
+    border-bottom:2px solid var(--line);
+    padding-bottom:12px;
+    margin-bottom:28px;
+  }
+
+  .overall-record{
+    display:flex;
+    align-items:baseline;
+    gap:18px;
+    background:var(--green-dark);
+    color:var(--white);
+    border-radius:6px;
+    padding:26px 28px;
+    margin-bottom:48px;
+  }
+  .overall-record .rec{
+    font-family:'Rockwell','Roboto Slab',Georgia,serif;
+    font-size:40px;
+    font-weight:700;
+    color:var(--gold-badge);
+  }
+  .overall-record .pct{
+    font-family:'Courier New', monospace;
+    font-size:15px;
+    color:var(--brass);
+  }
+  .overall-record .flag{
+    font-family:'Courier New', monospace;
+    font-size:11.5px;
+    color:var(--brass);
+    opacity:0.75;
+    margin-left:auto;
+    max-width:280px;
+    text-align:right;
+  }
+
+  table.data-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-bottom:48px;
+    font-family:'Courier New', monospace;
+    font-size:14px;
+  }
+  table.data-table th{
+    background:var(--green);
+    color:var(--white);
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    font-size:11.5px;
+    padding:10px 12px;
+    text-align:left;
+  }
+  table.data-table td{
+    padding:10px 12px;
+    border-bottom:1px solid var(--line);
+  }
+  table.data-table tr.pending td{ color:var(--ink-soft); font-style:italic; }
+
+  .person-grid{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:12px;
+    margin-bottom:48px;
+  }
+  @media (max-width:640px){ .person-grid{grid-template-columns:1fr;} }
+  .person-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:5px;
+    padding:12px 16px;
+  }
+  .person-row.flagged{ border-color:var(--seam); border-style:dashed; }
+  .person-name{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-family:'Rockwell','Roboto Slab',Georgia,serif;
+    font-size:16px;
+    font-weight:700;
+  }
+  .mini-avatar{
+    display:inline-flex;
+    width:28px;height:28px;
+    border-radius:50%;
+    overflow:hidden;
+    flex:none;
+    border:1px solid var(--line);
+    align-items:center;justify-content:center;
+    color:var(--white);
+    font-family:'Rockwell','Roboto Slab',Georgia,serif;
+    font-size:12px;
+    font-weight:700;
+  }
+  .person-record{
+    font-family:'Courier New', monospace;
+    font-size:14px;
+    color:var(--ink-soft);
+  }
+  .person-record b{ color:var(--ink); }
+
+  .poop-row{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:5px;
+    padding:12px 16px;
+    margin-bottom:8px;
+  }
+  .poop-row .week-tag{
+    font-family:'Rockwell','Roboto Slab',Georgia,serif;
+    font-size:14px;
+    font-weight:700;
+    color:var(--seam);
+    min-width:64px;
+  }
+  .poop-row .team{
+    font-family:'Courier New', monospace;
+    font-size:13.5px;
+    color:var(--ink-soft);
+  }
+  .poop-row .manager-name{
+    font-family:'Rockwell','Roboto Slab',Georgia,serif;
+    font-size:16px;
+    font-weight:700;
+  }
+  .poop-row .score{
+    margin-left:auto;
+    font-family:'Courier New', monospace;
+    font-size:14px;
+    color:var(--ink);
+  }
+  .poop-row.pending{ opacity:0.55; font-style:italic; }
+
+  footer{
+    padding:30px 0 60px;
+    text-align:center;
+    font-family:'Courier New', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    border-top:1px solid var(--line);
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div>
+      <a class="back-link" href="index.html">&larr; Back to League Home</a>
+      <h1 class="title">
+        <img class="title-flank" src="https://i.imgur.com/6g12vel.png" alt="">
+        The Poop Man Parlay Records
+        <img class="title-flank" src="https://i.imgur.com/6g12vel.png" alt="">
+      </h1>
+      <div class="subtitle">2025 Season &middot; Fort Rock Roughnecks</div>
+    </div>
+  </div>
+</header>
+
+<section class="wrap">
+  <h2 class="section-title">Lifetime Parlay Record</h2>
+  <div class="overall-record">
+    <div class="rec">65-77</div>
+    <div class="pct">(46%)</div>
+  </div>
+
+  <h2 class="section-title">Week by Week (2025)</h2>
+  <table class="data-table">
+    <thead><tr><th>Week</th><th>Parlay Record</th><th>Payout</th></tr></thead>
+    <tbody id="week-body"></tbody>
+  </table>
+
+  <h2 class="section-title">2025 Record Per Person</h2>
+  <div class="person-grid" id="person-grid"></div>
+
+  <h2 class="section-title">Poop Man of the Week</h2>
+  <div id="poop-list"></div>
+</section>
+
+<footer>
+  Compiled from 2025 league parlay tracking
+</footer>
+
+<script>
+const photos = {
+  Pat: "https://i.imgur.com/HJI9vPn.png",
+  Bri: "https://i.imgur.com/6u7ikwE.png",
+  Sean: "https://i.imgur.com/bA2v7wg.png",
+  Drew: "https://i.imgur.com/CAhBxQO.png",
+  Remy: "https://i.imgur.com/WtbgbQM.png",
+  Tommy: "https://i.imgur.com/hoGJYs2.png",
+  Ethan: "https://i.imgur.com/2ZAVNRF.png",
+  Crow: "https://i.imgur.com/1UXbWJY.png",
+  Jake: "https://i.imgur.com/uKQwCaE.png",
+  Cannone: "https://i.imgur.com/gQYUnJO.png",
+  Jarrett: "https://i.imgur.com/WXROBGn.png"
+};
+const avatarPalette = ["#16332a","#8c3b2e","#8a6b3d","#3a5a52","#5a3a52","#3a4f8a","#7a5a1e"];
+function colorFor(name){
+  let h=0; for(const c of name) h = (h*31 + c.charCodeAt(0)) % avatarPalette.length;
+  return avatarPalette[h];
+}
+function avatarImg(name, size){
+  size = size || 28;
+  const url = photos[name];
+  if(!url){
+    return `<span class="mini-avatar" style="width:${size}px;height:${size}px;background:${colorFor(name)}">${name[0]}</span>`;
+  }
+  return `<span class="mini-avatar" style="width:${size}px;height:${size}px;background:${colorFor(name)}">
+    <img src="${url}" alt="${name}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';">
+  </span>`;
+}
+
+// ---- Week by week parlay record ----
+const weeks = [
+  {week:1, record:"N/A", payout:null},
+  {week:2, record:"6/10", payout:null},
+  {week:3, record:"6/10", payout:null},
+  {week:4, record:"4/10", payout:null},
+  {week:5, record:"4/10", payout:null},
+  {week:6, record:"4/10", payout:null},
+  {week:7, record:"7/10", payout:null},
+  {week:8, record:"2/10", payout:"+$71,114"},
+  {week:9, record:"3/10", payout:"+$65,534"},
+  {week:10, record:"4/10", payout:"+$83,000"},
+  {week:11, record:"5/10", payout:"+$26,000"},
+  {week:12, record:"5/10", payout:"+$100,000"},
+  {week:13, record:"5/10", payout:"+$41,000"},
+  {week:14, record:"5/10", payout:"+$160,000,000"}
+];
+
+document.getElementById("week-body").innerHTML = weeks.map(w => `
+  <tr class="${w.record !== null ? '' : 'pending'}">
+    <td>Week ${w.week}</td>
+    <td>${w.record}</td>
+    <td>${w.payout || '—'}</td>
+  </tr>
+`).join("");
+
+// ---- Record per person ----
+const personRecords = [
+  {name:"Drew", record:"9-10", pct:47},
+  {name:"Sean", record:"6-8", pct:43},
+  {name:"Bri", record:"5-10", pct:33},
+  {name:"Remy", record:"4-10", pct:29},
+  {name:"Pat", record:"5-8", pct:38},
+  {name:"Ethan", record:"9-5", pct:64, medal:"🥈"},
+  {name:"Cannone", record:"7-7", pct:50, medal:"🥉"},
+  {name:"Jake", record:"8-4", pct:67, medal:"🥇"},
+  {name:"Tommy", record:"5-8", pct:38},
+  {name:"Jarrett", record:"7-7", pct:50, medal:"🥉"}
+].sort((a,b) => b.pct - a.pct);
+
+document.getElementById("person-grid").innerHTML = personRecords.map(p => `
+  <div class="person-row ${p.flagged ? 'flagged' : ''}">
+    <div class="person-name">${avatarImg(p.name)} ${p.medal ? p.medal+' ' : ''}${p.name}</div>
+    <div class="person-record"><b>${p.record}</b> (${p.pct}%)</div>
+  </div>
+`).join("");
+
+// ---- Poop Man of the Week ----
+// Team name -> manager, from team name history
+const teamOwner = {
+  "EAB FC": "Tommy",
+  "Princeton TBD": "Jarrett",
+  "California Crunchies": "Drew",
+  "Make Morris Great Again": "Bri",
+  "El Patman": "Pat",
+  "Gonzo The Kid": "Cannone",
+  "Normandy Invaders": "Jake"
+};
+
+const poopWeeks = [
+  {week:1, team:"EAB FC", score:"79.98"},
+  {week:2, team:"Princeton TBD", score:"94.28"},
+  {week:3, team:"California Crunchies", score:"88.84"},
+  {week:4, team:"Make Morris Great Again", score:"100.38"},
+  {week:5, team:"El Patman", score:"92.02"},
+  {week:6, team:"EAB FC", score:"93.92"},
+  {week:7, team:"Gonzo The Kid", score:"98.84"},
+  {week:8, team:"El Patman", score:"64.88"},
+  {week:9, team:"Normandy Invaders", score:"95.30"},
+  {week:10, team:"El Patman", score:"112.70"},
+  {week:11, team:"Make Morris Great Again", score:"76.06"},
+  {week:12, team:"EAB FC", score:"97.72"},
+  {week:13, team:"Make Morris Great Again", score:null}
+];
+
+document.getElementById("poop-list").innerHTML = poopWeeks.map(p => {
+  const manager = teamOwner[p.team];
+  return `
+    <div class="poop-row ${p.score ? '' : 'pending'}">
+      <div class="week-tag">Week ${p.week}</div>
+      ${manager ? avatarImg(manager, 32) : ''}
+      <div>
+        <div class="manager-name">${manager || '?'}</div>
+        <div class="team">${p.team}</div>
+      </div>
+      <div class="score">${p.score ? p.score+' pts' : 'pending'}</div>
+    </div>
+  `;
+}).join("");
+</script>
+
+</body>
+</html>
